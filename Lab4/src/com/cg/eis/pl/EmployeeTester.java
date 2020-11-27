@@ -12,6 +12,8 @@ public class EmployeeTester {
 		Employee e1=new Employee();		
 		
 		EmployeeService employeeService=new EmployeeServiceImplementation();
+		
+		
 		employeeService.getEmployeeDetails(e1);
 		employeeService.getInsuranceScheme(e1);
 //		System.out.println(insurance);
