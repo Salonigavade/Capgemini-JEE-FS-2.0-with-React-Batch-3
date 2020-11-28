@@ -52,7 +52,18 @@ public class EmployeeTester {
 		service.increasedSalary();
 		System.out.println();
 	
+		System.out.println("sort by emp id");
+		service.sortEmpId().stream().forEach(System.out::println);
+		System.out.println();
 		
+		System.out.println("sort by dept id");
+		service.sortDept().stream().forEach(System.out::println);
+	
+System.out.println();
+		
+		System.out.println("sort by emp name");
+		service.sortByFirstName().stream().forEach(System.out::println);
+	
 	}
 
 }

@@ -1,10 +1,12 @@
 package com.cg.training.service;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,18 +32,23 @@ public class EmployeeService {
 
 
 	public void deptNameWithEmp() {
-		//List<Department> deptList=EmployeeRepository.getDepartments();
-		//List<Employee> list=EmployeeRepository.getEmployees();
+		//		List<Employee> list= EmployeeRepository.getEmployees();
+		//        Map<String, Long> emp =list.stream()
+		//        		.filter((e)->e.getDepartment()==null)
+		//                .collect(Collectors.groupingBy (dept -> dept.getDepartment().getDepartmentName (), Collectors.counting()));
+		//        emp.entrySet().stream().forEach(e-> System.out.println(e));
+		List<Employee> employeeList = EmployeeRepository.getEmployees();
 
 
-//		Map<String, List<Employee>> map = EmployeeRepository.getEmployees()
-//				.stream().
-//				collect(Collectors.groupingBy((e)->e.getDepartment().getDept_name()));
-//		for(String str:map.keySet()) {
-//			System.out.println(str + map.get(str).size());
-//		}
 
+		Map<String, Long> employeeCountByDepartment = employeeList.stream()
+				.filter((emp) -> emp.getDepartment() != null )
+				.collect(Collectors.groupingBy(dept -> dept.getDepartment().getDepartmentName(), 
+						Collectors.counting()));
+
+		System.out.println(employeeCountByDepartment);
 	}
+
 
 	public void seniorEmp() {
 		List<Employee> list=EmployeeRepository.getEmployees();
@@ -50,15 +57,22 @@ public class EmployeeService {
 				.findFirst();
 
 		if(op.isPresent()) {		
-			System.out.println(op.get());
+			System.out.println(op.get().toString());
 		}
-
 	}
+	//		       List<Employee> employeeList= EmployeeRepository.getEmployees();
+	//        Employee maxByDate = employeeList
+	//                .stream()
+	//                .min(Comparator.comparing(Employee::getHireDate)) // getting employee with min hiredate who is senior
+	//                .get();
+	//        System.out.println("The senior most employee is "+maxByDate.getFirstName()+" "+maxByDate.getLastName());
+	//		 
+
+	//	}
 
 	public void empWithoutDept() {
 		List<Employee> list=EmployeeRepository.getEmployees();
 		list.stream()
-		//.map(e->e.getEmployeeId())
 		.filter(e1->e1.getDepartment()==null)
 		.collect(Collectors.toList())
 		.forEach(System.out::println);
@@ -68,7 +82,6 @@ public class EmployeeService {
 	public void depWithoutEmp() {
 		List<Department> deptList=EmployeeRepository.getDepartments();
 		deptList.stream()
-		//.map(e->e.getEmployeeId())
 		.filter(d->d.getDepartmentName()==null)
 		.collect(Collectors.toList())
 		.forEach(System.out::println);
@@ -77,26 +90,19 @@ public class EmployeeService {
 
 	public void highEmpDept() {
 		List<Employee> list=EmployeeRepository.getEmployees();
-		//		Optional<Employee> l= list.stream()
-		//				.map((e)->e.getDepartment())
-		//				.collect(Collectors.groupingBy(Employee::getEmployeeId,Collectors.counting())).get();
-		//				
+		Map<Department, Long> l= list.stream()
+				.filter((e)->e.getDepartment()!=null)
+				.collect(Collectors.groupingBy(Employee::getDepartment,Collectors.counting()));
+		System.out.println(l);
 
-		//.collect(Collectors.counting()));
-		//System.out.println(obj);
-		/**Map<String,List<Employee>> map=list
-				.stream()
-				.Collect(Collectors.groupingBy((e)->e.getDepartment()));
-			int max=0;
-			String dept="";
-			for(String str:map.keySet()) {
-				if(map.get(str).size()>max) {
-					max=map.get(str).size();
-					dept=str;
-				}
-			}
-			System.out.println(max);*/
-	
+
+		//				for(Entry<Department, Long> obj:l.entrySet()) {
+		//					//System.out.println("EmpId:"+obj.getKey());
+		//					System.out.println("Dept:"+obj.getValue());
+		//				}
+
+
+
 	}
 
 	public void empWithoutManager() {
@@ -107,28 +113,33 @@ public class EmployeeService {
 
 	}
 
-//	public List<String> empName() {
-//		ArrayList<String> empName=new ArrayList<>();
-//		List<Employee> list=EmployeeRepository.getEmployees();
-//		list.stream().
-//		filter((emp)->emp.getSalary()>20000).
-//		forEach((emp)->empName.add(emp.getFirstName()));
-//		return empName;
-//		//		Optional<Employee> op=list.stream()
-//		//		.sorted(Comparator.comparing(Employee::getEmployeeId))
-//		//		;
-//
-//	}
-	
+	//	public List<String> empName() {
+	//		ArrayList<String> empName=new ArrayList<>();
+	//		List<Employee> list=EmployeeRepository.getEmployees();
+	//		list.stream().
+	//		filter((emp)->emp.getSalary()>20000).
+	//		forEach((emp)->empName.add(emp.getFirstName()));
+	//		return empName;
+	//		//		Optional<Employee> op=list.stream()
+	//		//		.sorted(Comparator.comparing(Employee::getEmployeeId))
+	//		//		;
+	//
+	//	}
+
 	public void empWithDuration() {
-		List<Employee> e=EmployeeRepository.getEmployees();
-		for(Employee emp:e) {
-			System.out.println(emp.getFirstName() + " "+
-					ChronoUnit.MONTHS.between(emp.getHireDate(), LocalDate.now()));
-		}
+
+		List<Employee> employeeList= EmployeeRepository.getEmployees();
+		employeeList.stream()
+		.forEach(e -> {
+			Period period =e.getHireDate().until(LocalDate.now());
+			System.out.println("Employee Id :"+e.getFirstName()+" "+e.getLastName()+
+					" == Month:-"+ChronoUnit.MONTHS.between(e.getHireDate(), LocalDate.now())
+					+" == Days:-"+period.getDays());
+		});
 	}
-	
-	
+
+
+
 	public void empDetails() {
 		List<Employee> list=EmployeeRepository.getEmployees();
 		for(Employee emp:list) {
@@ -139,28 +150,50 @@ public class EmployeeService {
 		}
 		System.out.println();
 	}
-	
+
 	public void empFriday() {
 		List<Employee> list=EmployeeRepository.getEmployees();
-			list.stream()
-			.filter((e)->e.getHireDate().getDayOfWeek().toString().equals("FRIDAY"))
-			.collect(Collectors.toList());
-			
-			System.out.println(list.size());
-			for(Employee emp:list) {
-				System.out.println(emp.getFirstName());
-			}
-	}
-	
-	
-	public void increasedSalary() {
-		List<Employee> list=EmployeeRepository.getEmployees();
-		list.stream().collect(Collectors.toList());
+		list.stream()
+		.filter((e)->e.getHireDate().getDayOfWeek().toString().equals("FRIDAY"))
+		.collect(Collectors.toList());
+
+		System.out.println(list.size());
 		for(Employee emp:list) {
-			System.out.println("Emp Name: "+emp.getFirstName()
-				+"Salary hike "+emp.getSalary()*1.15);
+			System.out.println(emp.getFirstName());
 		}
 	}
+
+
+	public void increasedSalary() {
+		List<Employee> list=EmployeeRepository.getEmployees();
+		list.stream().
+		collect(Collectors.toList());
+		for(Employee emp:list) {
+			System.out.println("Emp Name: "+emp.getFirstName()+ "Salary" +emp.getSalary()
+			+"Salary increased: "+emp.getSalary()*1.15);
+		}
+	}
+
+	public List<Employee> sortEmpId(){
+		List<Employee> list=EmployeeRepository.getEmployees();
+		return list.stream()
+				//.filter((e)->e.getDepartment())
+		.sorted(Comparator.comparing(Employee::getEmployeeId))
+		.collect(Collectors.toList());
+	}
 	
+	public List<Department> sortDept(){
+		List<Department> list=EmployeeRepository.getDepartments();
+		return list.stream()
+				//.filter((dept)->dept.getDepartmentId()!=null)
+		.sorted(Comparator.comparing(Department::getDepartmentId))
+		.collect(Collectors.toList());
+	}
 	
+	public List<Employee> sortByFirstName(){
+		List<Employee> list=EmployeeRepository.getEmployees();
+		return list.stream()
+				.sorted(Comparator.comparing(Employee::getFirstName))
+				.collect(Collectors.toList());
+	}
 }
